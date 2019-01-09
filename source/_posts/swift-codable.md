@@ -30,7 +30,7 @@ public protocol Encodable {
 public protocol Decodable {
     public init(from decoder: Decoder) throws
 }
-```  
+```
 
 可以看到，`Codable`本质是打包了`Decodable`和`Encodable`两个协议，这两个协议分别定义了一个方法。整体看上去非常简洁。  
 
@@ -38,7 +38,7 @@ public protocol Decodable {
 
 ## 上手实践  
 
-####0x01 基本用法
+#### 0x01 基本用法
 
 从一个简单的例子来说明`Codable`到底怎么用。  
 
@@ -67,7 +67,7 @@ let decodedAnimal = try jsonDecoder.decode(Animal.self, from: jsonData)
 
 struct Animal的定义中没有一行多余的跟`Codable`相关的代码，为什么就获得了编解码能力呢？因为当定义一个新的类型，其中的所有成员变量的类型都支持`Codable`协议，那么只要这个新类型声明`Codable`就直接获得了`Codable`能力。Swift默认给Int、Double、Bool、Float、String等基本类型提供了`Codable`支持。  
 
-####0x02  手动实现Codable协议  
+#### 0x02  手动实现Codable协议  
 
 这一节介绍如何手动实现`Codable`协议。先上一个稍微复杂的Demo。  
 
@@ -95,7 +95,7 @@ struct Person {
         return formatter
     }
 }
-```  
+```
 
 然后，给Person类型实现自定义的`Codable`协议：
 
@@ -162,7 +162,7 @@ let decodedMing = try JSONDecoder().decode(Person.self, from: jsonData)
 2. 对于同一个字段，编码前后需要用到不同的字段名称，如服务端API返回字段`unit_price`，客户端对应的是`unitPrice`。  
 3. 对于同一个字段，编码前后需要使用不同的格式/类型，如时间戳和格式化的时间字符串。  
 
-####0x03  继承
+#### 0x03  继承
 
 以上的例子都是定义了struct类型，swift的struct和class之间有许多区别，一个非常大的区别是只有class才支持继承！对于有继承的情况，应该如何使用`Codable`呢？  
 
