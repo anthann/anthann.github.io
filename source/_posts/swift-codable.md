@@ -411,11 +411,11 @@ if let str = String(data: creatureJsonData, encoding: .utf8) {
 // 解码时，也是先解码出Wrapper
 let decodedMetaObject: MetaObject<CreatureMetaType> = try JSONDecoder().decode(MetaObject<CreatureMetaType>.self, from: creatureJsonData)
 // 然后再取出其中Object，这个Object的类型是"Animal"
-let decodedCreature = decodedMetaObject.object
-```  
-
+let decodedCreature = decodedMetaObject.object  
+```
+  
 以上就是通过借助Wrapper对象MetaObject来编解码一个类簇的instance的方法（抱歉这句话好拗口）。  
-
+  
 接下来，我们要编码一个数组creatures，类型是[Creature]。其中实际装的是Animal、Plant或Creature本身。  
   
 ```swift
@@ -426,7 +426,7 @@ let creatures: [Creature] = [
 ]
 ```
 
-类似于编码单个对象，我们同样是定义一个Wrapper，这个Wrapper里面装的是array：
+类似于编码单个对象，我们同样是定义一个Wrapper，这个Wrapper里面装的是array：  
 
 ```swift
 struct MetaArray<M: Meta>: Codable, ExpressibleByArrayLiteral {
@@ -477,7 +477,7 @@ struct MetaArray<M: Meta>: Codable, ExpressibleByArrayLiteral {
         }
     }
 }
-```  
+```
 
 然后借助这个Wrapper来对多态特性的Array进行编解码：  
 
@@ -491,7 +491,7 @@ if let str = String(data: creaturesJsonData, encoding: .utf8) {
 
 let decodedMetaArray: MetaArray<CreatureMetaType> = try JSONDecoder().decode(MetaArray<CreatureMetaType>.self, from: creaturesJsonData)
 let decodedCreatures = decodedMetaArray.array
-```  
+```
 
 全部代码请[点击这里](https://gist.github.com/anthann/a638ca1cd7f82f5bdfa48a6560cf7900)。代码使用Swift4.2编写，在XCode 10.1的Playground里测试有效。  
 
