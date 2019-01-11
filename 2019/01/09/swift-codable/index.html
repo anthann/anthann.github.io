@@ -144,6 +144,14 @@
 <p>面向对象编程时，对象的类型信息在编译或运行时会记录在内存里。举例来说，<code>Objective-C</code>是一门动态语言，运行时每个对象有<code>isa</code>指针，通过这个指针就可以读取到类型信息。再举个例子，C语言里定义一个指向int的指针<code>int *</code>，这个指针本质其实是一个数据结构，这个数据结构里不但存储了指向的地址，同时也要说明指向的地址里存储的是一个int类型的数据。  </p>
 <p>说到这里我们应该可以想到解决方法了：<strong>encode时，把对象的类型信息一并编码进去；decode时，先把类型信息拿出来，然后再解码成对应类型的对象</strong>。  </p>
 <p>照着这个思路做，就可以解决多态的问题。只不过，写起来很麻烦。后来我从<a href="https://stackoverflow.com/questions/44441223/encode-decode-array-of-types-conforming-to-protocol-with-jsonencoder" target="_blank" rel="noopener">StackOverflow</a>发现了一个优雅的解决方案：  </p>
+<p>先说结论：  </p>
+<ol>
+<li>对每个类簇，实现一个遵守<code>Meta</code>协议的Enum。使用这个Enum可以根据输入的Class Type String获得对应的Type Class。  </li>
+<li>编解码类簇里的任意对象，先用<code>MetaObject</code>这个Wrapper包装对象，然后对Wrapper对象编解码。</li>
+<li>编解码类簇的Array，先用<code>MetaArray</code>这个Wrapper包装Array，然后对Wrapper对象编解码。  </li>
+</ol>
+<p>以下是具体的实现方法:  </p>
+<h5 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h5><hr>
 <p>首先定义一个Protocol：  </p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swift无法使用type string来构造Type，因此对每个使用了多态的类簇，实现一个遵守此协议的enum，间接获取Type。</span></span><br><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Meta</span>: <span class="title">Codable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Element</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">metatype</span><span class="params">(<span class="keyword">for</span> typeString: String)</span></span> -&gt; <span class="type">Self</span></span><br><span class="line">    <span class="keyword">var</span> type: <span class="type">Decodable</span>.<span class="type">Type</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后定义一个wrapper，这个Wrapper是一个泛型，它实现了Codable:  </p>
