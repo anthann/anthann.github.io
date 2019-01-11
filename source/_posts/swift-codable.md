@@ -311,7 +311,19 @@ let decodedAnimal: Creature = try JSONDecoder().decode(Creature.self, from: crea
 
 说到这里我们应该可以想到解决方法了：**encode时，把对象的类型信息一并编码进去；decode时，先把类型信息拿出来，然后再解码成对应类型的对象**。  
 
+
 照着这个思路做，就可以解决多态的问题。只不过，写起来很麻烦。后来我从[StackOverflow](https://stackoverflow.com/questions/44441223/encode-decode-array-of-types-conforming-to-protocol-with-jsonencoder)发现了一个优雅的解决方案：  
+
+先说结论：  
+
+1. 对每个类簇，实现一个遵守`Meta`协议的Enum。使用这个Enum可以根据输入的Class Type String获得对应的Type Class。  
+2. 编解码类簇里的任意对象，先用`MetaObject`这个Wrapper包装对象，然后对Wrapper对象编解码。
+3. 编解码类簇的Array，先用`MetaArray`这个Wrapper包装Array，然后对Wrapper对象编解码。  
+
+以下是具体的实现方法:  
+
+##### TL;DR
+------
 
 首先定义一个Protocol：  
 
