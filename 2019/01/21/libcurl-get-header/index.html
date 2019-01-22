@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>使用curl或libcurl查看HTTP响应头 | anthann&#39;s personal blog</title>
+
+  
+  <meta name="author" content="anthann">
+  
+
+  
+  <meta name="description" content="最近有一个需求是这样的：拿到一个HTTP协议的URL，判定指向的资源是否是图片。  
+一个常规做法是向URL发起请求，然后看响应头里面Content-Type来得知资源的MIME信息。这个场景下我们只需要拿到Response Header，可以舍弃Body部分。嗯，典型的Method HEAD的用法">
+  
+
+  
+  
+  <meta name="keywords" content="cURL, libcurl">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="使用curl或libcurl查看HTTP响应头">
+
+  <meta property="og:site_name" content="anthann&#39;s personal blog">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="anthann&#39;s personal blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">anthann&#39;s personal blog</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>使用curl或libcurl查看HTTP响应头</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/01/21/libcurl-get-header/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-01-21T13:22:24.000Z">
+          2019-01-21
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>最近有一个需求是这样的：拿到一个HTTP协议的URL，判定指向的资源是否是图片。  </p>
+<p>一个常规做法是向URL发起请求，然后看响应头里面<code>Content-Type</code>来得知资源的MIME信息。这个场景下我们只需要拿到Response Header，可以舍弃Body部分。嗯，典型的Method <code>HEAD</code>的用法。  </p>
+<h2 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h2><p>熟悉curl的同学可能会在terminal敲下这段命令：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I http_url</span><br></pre></td></tr></table></figure>
+<p>这句命令将向服务器发送一个HTTP method为<code>HEAD</code>的请求，正常情况下将获得类似下面这样的信息：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 Connection established</span><br><span class="line"></span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Content-Type: img/png</span><br><span class="line">Access-Control-Allow-Origin: *</span><br><span class="line">Content-Length: 5057</span><br></pre></td></tr></table></figure>
+<p>通过其中的<code>Content-Type</code>我们可以知道指向的资源是图片。  </p>
+<p>当然了，有的服务器不支持<code>HEAD</code>请求，以上命令会返回<code>405 Method Not Allowed</code>错误。解决方法也简单，在命令里加上<code>-X GET</code>参数把method改写成<code>GET</code>:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET -I url</span><br></pre></td></tr></table></figure>
+<h2 id="libcurl"><a href="#libcurl" class="headerlink" title="libcurl"></a>libcurl</h2><p>以上是如何在Terminal通过cURL命令获取HTTP响应头。很多时候我们是在项目代码里需要检查响应的<code>Content-Type</code>，怎么做呢？  </p>
+<p>对于C语言来说，可以使用<a href="https://curl.haxx.se/libcurl/" target="_blank" rel="noopener">libcurl</a>。C++、Objective-C、Swift亦可直接或间接使用libcurl，其他语言通常也有对应的库/包。以下以C语言代码为例。    </p>
+<p>首先我们先定义接收响应内容的数据结构：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">string</span> &#123;</span></span><br><span class="line">    <span class="keyword">char</span> *ptr;</span><br><span class="line">    <span class="keyword">size_t</span> len;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_string</span><span class="params">(struct <span class="built_in">string</span> *s)</span> </span>&#123;</span><br><span class="line">    s-&gt;len = <span class="number">0</span>;</span><br><span class="line">    s-&gt;ptr = <span class="built_in">malloc</span>(s-&gt;len+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (s-&gt;ptr == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"malloc() failed\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    s-&gt;ptr[<span class="number">0</span>] = <span class="string">'\0'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，需要定义一个写函数，这个函数会不断的把数据追加进传入的指针：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ptr：src地址</span></span><br><span class="line"><span class="comment">// size*nmemb：数据长度</span></span><br><span class="line"><span class="comment">// s: dest地址</span></span><br><span class="line"><span class="keyword">size_t</span> writefunc(<span class="keyword">void</span> *ptr, <span class="keyword">size_t</span> size, <span class="keyword">size_t</span> nmemb, struct <span class="built_in">string</span> *s) &#123;</span><br><span class="line">    <span class="keyword">size_t</span> new_len = s-&gt;len + size*nmemb;</span><br><span class="line">    s-&gt;ptr = <span class="built_in">realloc</span>(s-&gt;ptr, new_len+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (s-&gt;ptr == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"realloc() failed\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">memcpy</span>(s-&gt;ptr+s-&gt;len, ptr, size*nmemb);</span><br><span class="line">    s-&gt;ptr[new_len] = <span class="string">'\0'</span>;</span><br><span class="line">    s-&gt;len = new_len;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> size*nmemb;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们一步步用libcurl实现上一节cURL一样的功能。  </p>
+<ul>
+<li>初始化CURL对象  </li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CURL *curl = curl_easy_init();</span><br><span class="line">CURLcode res = CURLE_OK;</span><br><span class="line"><span class="comment">// 响应将被存储进s</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">string</span> <span class="title">s</span>;</span></span><br><span class="line">init_string(&amp;s);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果初始化成功，设置请求参数  </li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置请求的url地址</span></span><br><span class="line">curl_easy_setopt(curl, CURLOPT_URL, url);</span><br><span class="line"><span class="comment">// 不需要响应的body</span></span><br><span class="line">curl_easy_setopt(curl, CURLOPT_NOBODY, <span class="number">1L</span>);</span><br><span class="line"><span class="comment">// 需要打印响应的header</span></span><br><span class="line">curl_easy_setopt(curl, CURLOPT_HEADER, <span class="number">1L</span>);</span><br><span class="line"><span class="comment">// 设置写函数writefunc和目标地址s，当收到响应后会不断调用writefunc并把数据追加到s指向的地址</span></span><br><span class="line">curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);</span><br><span class="line">curl_easy_setopt(curl, CURLOPT_WRITEDATA, &amp;s);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最后，发起请求，清理现场  </li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">res = curl_easy_perform(curl);</span><br><span class="line">curl_easy_cleanup(curl);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%s\n"</span>, s.ptr);</span><br><span class="line"><span class="built_in">free</span>(s.ptr);</span><br></pre></td></tr></table></figure>
+<p>正常情况下命令行里打出了响应头信息。  </p>
+<p><code>CURLOPT_HEADER</code>把请求的HTTP Method设置为<code>HEAD</code>，如果服务器不支持则会收到405错误。解决方法是试着把HTTP Method强制改回<code>GET</code>。  </p>
+<p>查看文档，很快发现了这条语句: <code>curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);</code>。加在<code>CURLOPT_HEADER</code>后面，问题解决。  </p>
+<p>有人遇到用<code>CURLOPT_HTTPGET</code>没有把Method改回<code>GET</code>的情况，可以试下用<code>curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, &quot;GET&quot;);</code>。  </p>
+<p><a href="https://gist.github.com/anthann/a0f21eea02a57b5f53f9551f49cc1017" target="_blank" rel="noopener">完整代码</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文分别用<code>curl</code>和<code>libcurl</code>演示了如何获取HTTP Response HEAD。常规做法是直接发送一个method为<code>HEAD</code>的请求；对于不支持<code>HEAD</code>的服务器，本文还提供了使用<code>GET</code>请求达到相同效果的方法。  </p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/cURL-libcurl/">cURL, libcurl</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    <br>
+    
+    &copy; 2019 anthann
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
