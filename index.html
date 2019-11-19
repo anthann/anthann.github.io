@@ -59,6 +59,99 @@
 
   
     
+    <h3 class="article-title"><a href="/2019/11/19/be-cautious-of-js-api/"><span>JS采坑记（持续更新）</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/11/19/be-cautious-of-js-api/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-11-19T03:52:02.000Z">
+          2019-11-19
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="isNaN"><a href="#isNaN" class="headerlink" title="isNaN"></a>isNaN</h2><table>
+<thead>
+<tr>
+<th>value</th>
+<th>全局isNaN</th>
+<th>Number.isNaN</th>
+<th>Lodash.isNaN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NaN</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td>1</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“1”</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“A string”</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>undefined</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>{}</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
     <h3 class="article-title"><a href="/2019/01/21/libcurl-get-header/"><span>使用curl或libcurl查看HTTP响应头</span></a></h3>
     
   

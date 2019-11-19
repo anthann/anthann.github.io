@@ -3,21 +3,61 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Archives: 2019 | anthann&#39;s personal blog</title>
+  <title>JS采坑记（持续更新） | anthann&#39;s personal blog</title>
 
   
   <meta name="author" content="anthann">
   
 
   
+  <meta name="description" content="isNaN
 
+
+value
+全局isNaN
+Number.isNaN
+Lodash.isNaN
+
+
+
+
+NaN
+true
+true
+true
+
+
+1
+false
+false
+false
+
+
+“1”
+false
+false
+false
+
+
+“A string”
+true
+false
+false
+
+
+u">
+  
+
+  
+  
+  <meta name="keywords" content="">
   
 
   <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-  
+  <meta property="og:title" content="JS采坑记（持续更新）">
 
   <meta property="og:site_name" content="anthann&#39;s personal blog">
 
@@ -54,54 +94,98 @@
 </header>
 
     <main class="site-main posts-loop">
-    
+    <article>
 
-<article>
-
-  <h2 class="article-title ">2019</h2>
-
-  <div class="archive">
-    
-      <div class="post archive">
-        <div class="archive-post">
-          <time datetime="2019-11-19T03:52:02.000Z">
-            <a href="/2019/11/19/be-cautious-of-js-api/">2019-11-19</a>
-          </time>
-          
-            <h3 class="archive-title"><a href="/2019/11/19/be-cautious-of-js-api/"><span>JS采坑记（持续更新）</span></a></h3>
-          
-        </div>
-      </div>
-    
-      <div class="post archive">
-        <div class="archive-post">
-          <time datetime="2019-01-21T13:22:24.000Z">
-            <a href="/2019/01/21/libcurl-get-header/">2019-01-21</a>
-          </time>
-          
-            <h3 class="archive-title"><a href="/2019/01/21/libcurl-get-header/"><span>使用curl或libcurl查看HTTP响应头</span></a></h3>
-          
-        </div>
-      </div>
-    
-      <div class="post archive">
-        <div class="archive-post">
-          <time datetime="2019-01-09T12:25:16.000Z">
-            <a href="/2019/01/09/swift-codable/">2019-01-09</a>
-          </time>
-          
-            <h3 class="archive-title"><a href="/2019/01/09/swift-codable/"><span>Swift Codable深度实践</span></a></h3>
-          
-        </div>
-      </div>
-    
-    <nav class="pagination">
   
+    
+    <h3 class="article-title"><span>JS采坑记（持续更新）</span></h3>
+    
   
-</nav>
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/11/19/be-cautious-of-js-api/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-11-19T03:52:02.000Z">
+          2019-11-19
+        </time>
+      </a>
+    </span>
   </div>
 
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="isNaN"><a href="#isNaN" class="headerlink" title="isNaN"></a>isNaN</h2><table>
+<thead>
+<tr>
+<th>value</th>
+<th>全局isNaN</th>
+<th>Number.isNaN</th>
+<th>Lodash.isNaN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NaN</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td>1</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“1”</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“A string”</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>undefined</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>{}</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
 </article>
+
+
     </main>
 
     <footer class="site-footer">
