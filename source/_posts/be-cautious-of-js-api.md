@@ -16,3 +16,17 @@ tags:
 | {}    | true        | false         | false        |
 
 
+## typeof
+
+| value         |  typeof           | 
+| ----          |   ----            |  
+| NaN           |  'number'         | 
+| 1             |  'number'         | 
+| {}            |  'object'         |
+| []            |  'object'         | 
+| null          |  'object'         |
+| undefined     |  'undefined'      | 
+| 'string'      |  'string'         | 
+| tree          |  'boolean'        | 
+| (function(){})|  'function'       | 
+| (()=>{})      |  'function'       | 
